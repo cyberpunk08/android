@@ -1,10 +1,16 @@
 package com.example.pjt_student;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -14,6 +20,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -31,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-public class DetailActivity extends AppCompatActivity implements TabHost.OnTabChangeListener {
+public class DetailActivity extends AppCompatActivity implements TabHost.OnTabChangeListener, View.OnClickListener {
 
     ImageView studentImageView;
     TextView nameView;
@@ -58,6 +65,10 @@ public class DetailActivity extends AppCompatActivity implements TabHost.OnTabCh
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        //자신을 실행시킨 intent 획득..
+        Intent intent = getIntent();
+        studentId = intent.getIntExtra("id", 1);
+
         initData();
         initTab();
         initAddScore();
@@ -67,6 +78,7 @@ public class DetailActivity extends AppCompatActivity implements TabHost.OnTabCh
     }
 
     private void initData() {
+
         studentImageView = findViewById(R.id.detail_student_image);
         nameView = findViewById(R.id.detail_name);
         phoneView = findViewById(R.id.detail_phone);
@@ -98,6 +110,11 @@ public class DetailActivity extends AppCompatActivity implements TabHost.OnTabCh
 
             scoreView.setScore(score);
         }
+
+        db.close();
+
+        studentImageView.setOnClickListener(this);
+        initStudentImage(photo);
 
     }
 
@@ -361,6 +378,95 @@ public class DetailActivity extends AppCompatActivity implements TabHost.OnTabCh
     public void onTabChanged(String tabId) {
         if(tabId.equals("tab2")) {
             webView.loadUrl("file:///android_asset/test.html");
+        }
+    }
+
+    //menu event 함수
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String sendData = "score : " + scoreList.get(0).get("score") + ", date : " + scoreList.get(0).get("date");
+
+        int id = item.getItemId();
+
+        if(id == R.id.menu_detail_sms) {
+            String phoneNumber = phoneView.getText().toString();
+
+            if(phoneNumber != null && !phoneNumber.equals("")) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SENDTO);
+                intent.setData((Uri.parse("smsto:" + phoneNumber)));
+                intent.putExtra("sms_body", sendData);
+                startActivity(intent);
+            }
+        } else if(id == R.id.menu_detail_email) {
+            String email = emailView.getText().toString();
+
+            if(email != null && !email.equals("")) {
+                String mailto = "mailto:" + email + "?subject=" + Uri.encode("score") + "&body=" + Uri.encode(sendData);
+
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse(mailto));
+
+                try {
+                    startActivity(intent);
+                } catch(Exception e) {
+                    Toast toast = Toast.makeText(this, "no email app", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initStudentImage(String photo) {
+        if(photo != null && !photo.equals("")) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 10;
+            Bitmap bitmap = BitmapFactory.decodeFile(photo, options);
+            if(bitmap != null) {
+                studentImageView.setImageBitmap(bitmap);
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent();
+
+        intent.setAction(Intent.ACTION_PICK);
+        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+
+        startActivityForResult(intent, 10);
+    }
+
+    //startActivityForResult에 의한 요청이 되돌아 올 때, 호출....
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if(requestCode == 10 && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            String[] columns = {MediaStore.Images.Media.DATA};  //사진 경로
+
+            Cursor cursor = getContentResolver().query(uri, columns, null, null, null);
+
+            cursor.moveToFirst();
+            String filePath = cursor.getString(0);
+            cursor.close();
+
+            Log.d("lyh", "filePath...." + filePath);
+
+            if(filePath != null && !filePath.equals("")) {
+                DBHelper helper = new DBHelper(this);
+                SQLiteDatabase db = helper.getWritableDatabase();
+                db.execSQL("update tb_student set photo=? where _id=?", new String[]{filePath, String.valueOf(studentId)});
+
+                db.close();
+
+                initStudentImage(filePath);
+            }
         }
     }
 }

@@ -1,12 +1,19 @@
 package com.example.pjt_student;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -60,6 +67,61 @@ public class MainListAdapter extends ArrayAdapter<StudentVO> {
         final StudentVO vo = datas.get(position);
 
         nameView.setText(vo.name);
+
+        //OOM 고려해서 개발해야 한다. 이미지 원본 데이터 사이즈를 줄여서 로딩....
+        if(vo.photo != null && !vo.photo.equals("")) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 10;
+            Bitmap bitmap = BitmapFactory.decodeFile(vo.photo);
+
+            if(bitmap != null) {
+                studentImageView.setImageBitmap(bitmap);
+            }
+        } else {
+            studentImageView.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_student_small, null));
+        }
+
+        studentImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View dialogRoot = inflater.inflate(R.layout.dialog_student_image, null);
+                ImageView dialogImageView = dialogRoot.findViewById(R.id.dialog_image);
+
+                if(vo.photo != null && !vo.photo.equals("")) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 10;
+                    Bitmap bitmap = BitmapFactory.decodeFile(vo.photo);
+
+                    if(bitmap != null) {
+                        dialogImageView.setImageBitmap(bitmap);
+                    }
+                } else {
+                    dialogImageView.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_student_large, null));
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setView(dialogRoot);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        phoneView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(vo.phone != null && !vo.phone.equals("")) {
+                    //call app의 activity를 intent로...
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_CALL);
+                    intent.setData(Uri.parse("tel:" + vo.phone));
+                    context.startActivity(intent);
+                } else {
+                    Toast toast = Toast.makeText(context, R.string.main_list_phone_error, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
 
         return convertView;
 
