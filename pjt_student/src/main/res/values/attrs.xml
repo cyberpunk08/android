@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        custom view를 activity에서 layout xml에 등록해서 화면구성
+        그때.. custom view 만의 속성을 가질 수 있는가?
+        기본은 에러난다.. 할려면 선언하고 사용
+    -->
+    <declare-styleable name="AAA">
+        <attr name="scoreColor" format="color" />
+    </declare-styleable>
+</resources>

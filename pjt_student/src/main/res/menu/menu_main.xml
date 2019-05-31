@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--
+        showAsAction : 메뉴를 action button 으로 올릴것인가?
+        always, ifRoom, never(default)
+
+        action button 은 action bar의 내용이다. action bar가 api level 11부터 추가된 내용
+        하위호환성은 문제가 될 수 있음.
+        actionbar의 하위호환성을 해결하기 위한 라이브러리가 appcompat-v7
+        AppComaptActivity 에 의해 action button이 처리된디ㅏ. AppcompatActivity는 표준은 아니다.
+        app namespace 로...
+
+        ActionBar 에 내장된 view 개념이 action view 이고... 메뉴 기법으로 이용한다.
+     -->
+    <item
+        android:id="@+id/menu_main_search"
+        android:title="search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        />
+</menu>

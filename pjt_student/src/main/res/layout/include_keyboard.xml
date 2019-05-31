@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    layout xml 파일에 표준 lib의 view는 클래스명을 태그명으로
+    표준이 아닌 view도 layout xml 등록해서 화면 구성이 가능... 단 등록할려면 꼭 full package 명으로 등록해야 한다.
+
+    view가 표준 lib가 아니라면 그 속성도 표준속성이 아니다. android namespace로 등록 불가
+    별도의 namespace 선언해서 등록해야 한다...
+-->
+<android.support.v7.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:orientation="horizontal"
+    app:columnCount="4">
+
+    <TextView
+        android:id="@+id/key_edit"
+        android:text="0"
+        android:layout_width="0dp"
+        android:gravity="center_horizontal"
+        android:textSize="30dp"
+        app:layout_columnWeight="1"
+        app:layout_columnSpan="4"
+        />
+
+    <Button
+        android:id="@+id/key_1"
+        android:text="1"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_2"
+        android:text="2"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_3"
+        android:text="3"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_4"
+        android:text="4"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_5"
+        android:text="5"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_6"
+        android:text="6"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_7"
+        android:text="7"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_8"
+        android:text="8"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_9"
+        android:text="9"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_0"
+        android:text="0"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        />
+
+    <Button
+        android:id="@+id/key_back"
+        android:text="delete"
+        android:drawableLeft="@android:drawable/ic_input_delete"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        app:layout_columnSpan="2"
+        />
+
+    <Button
+        android:id="@+id/key_add"
+        android:text="add"
+        android:layout_width="0dp"
+        app:layout_columnWeight="1"
+        app:layout_columnSpan="4"
+        />
+
+</android.support.v7.widget.GridLayout>
